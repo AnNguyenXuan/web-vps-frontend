@@ -55,13 +55,13 @@ Bạn sẽ thấy danh sách các nhánh remote tương tự như sau:
 Sau đó, hãy chuyển sang nhánh của mình. Bạn có thể sử dụng lệnh sau để tạo một nhánh local mới kết nối với nhánh remote tương ứng và chuyển sang nhánh đó:
 
 ```
-git checkout -b origin/<tên_nhánh>
+git checkout -b <tên_nhánh>
 ```
 
 **Ví dụ:**
 
 ```
-git checkout -b origin/dev-an
+git checkout -b dev-an
 ```
 
 Lệnh này sẽ tạo nhánh local tên là **an**, kết nối với nhánh remote `remotes/origin/dev-an` trên GitHub, đồng thời chuyển nhánh đang hoạt động sang **vps-an** thay vì **main** như ban đầu.
