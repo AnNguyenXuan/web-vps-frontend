@@ -1,16 +1,79 @@
-# React + Vite
+# Website quản lý vps hosting
+```
+Dự án code bằng React + Vite + Tailwindcss, chạy nodejs 22.12
+```
+# Cấu trúc thư mục
+📦src
+ ┣ 📂api
+ ┣ 📂assets
+ ┃ ┗ 📜react.svg
+ ┣ 📂components
+ ┃ ┣ 📂home
+ ┃ ┗ 📂shared
+ ┃ ┃ ┣ 📜control.jsx
+ ┃ ┃ ┣ 📜footer.jsx
+ ┃ ┃ ┗ 📜navbar.jsx
+ ┣ 📂layout
+ ┃ ┗ 📜rootlayout.jsx
+ ┣ 📂pages
+ ┃ ┗ 📜home.jsx
+ ┣ 📜App.css
+ ┣ 📜App.jsx
+ ┣ 📜index.css
+ ┗ 📜main.jsx
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### Bắt đầu với dự án
 
-Currently, two official plugins are available:
+Để bắt đầu với dự án, hãy clone repository về máy của bạn:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```
+git clone https://github.com/AnNguyenXuan/web-vps-frontend.git
+```
 
-## React Compiler
+### Quản lý nhánh
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Chạy lệnh dưới đây để cập nhật danh sách các nhánh từ repository:
 
-## Expanding the ESLint configuration
+```
+git fetch
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Để kiểm tra kết quả, bạn có thể xem tất cả các nhánh (cả local và remote):
+
+```
+git branch -a
+```
+
+Bạn sẽ thấy danh sách các nhánh remote tương tự như sau:
+
+  * `main`
+  * `remotes/origin/dev-an`
+  * `remotes/origin/dev-du`
+
+Sau đó, hãy chuyển sang nhánh của mình. Bạn có thể sử dụng lệnh sau để tạo một nhánh local mới kết nối với nhánh remote tương ứng và chuyển sang nhánh đó:
+
+```
+git checkout -b origin/<tên_nhánh>
+```
+
+**Ví dụ:**
+
+```
+git checkout -b origin/dev-an
+```
+
+Lệnh này sẽ tạo nhánh local tên là **an**, kết nối với nhánh remote `remotes/origin/dev-an` trên GitHub, đồng thời chuyển nhánh đang hoạt động sang **vps-an** thay vì **main** như ban đầu.
+
+-----
+
+### Viết báo cáo và đẩy lên GitHub
+
+Để đẩy nội dung lên GitHub, hãy sử dụng các lệnh sau theo thứ tự:
+
+```
+git add .
+git commit -m "<ghi tóm tắt vài chữ về nội dung đẩy>"
+git push
+```
+
+**Lưu ý:** Trước khi đẩy, hãy luôn kiểm tra lại xem bạn đang ở đúng nhánh. Điều này giúp tránh việc đẩy nhầm nội dung.
