@@ -1,6 +1,48 @@
 # Website quản lý vps hosting
 ```
-Dự án code bằng React + Vite + Tailwindcss, chạy nodejs 22.12
+Dự án code bằng React + Vite + Tailwindcss, chạy nodejs 22.
+
+Hướng dẫn cài đặt truy cập https://github.com/coreybutler/nvm-windows/releases
+cài gói nvm-setup.exe
+
+Setup nodejs với nvm
+nvm install 22.12.0
+nvm use 22.12.0
+node -v
+npm -v
+
+Lệnh cài đặt và khởi chạy frontend
+npm create vite@latest frontend -- --template react-ts
+cd frontend
+npm install
+npm i -D tailwindcss @tailwindcss/vite
+
+Sửa config vite.config.js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+})
+
+Sửa src/index.css
+@import "tailwindcss";
+
+Kiểm tra nhanh
+npm run build
+
+Chạy dự án
+npm run dev
+
+Lệnh update
+npm install -g npm@11.6.1
+
+Lệnh cài icons
+npm install react-icons --save
+
+Lệnh cài 
+npm i react react-dom react-router-dom
 ```
 # Cấu trúc thư mục
 ```
@@ -56,13 +98,12 @@ Sau đó, hãy chuyển sang nhánh của mình. Bạn có thể sử dụng l�
 
 ```
 git branch -M <tên nhánh>
-git checkout -b <tên_nhánh>
 ```
 
 **Ví dụ:**
 
 ```
-git checkout -b dev-an
+git branch -M main
 ```
 
 Lệnh này sẽ tạo nhánh local tên là **an**, kết nối với nhánh remote `remotes/origin/dev-an` trên GitHub, đồng thời chuyển nhánh đang hoạt động sang **vps-an** thay vì **main** như ban đầu.
