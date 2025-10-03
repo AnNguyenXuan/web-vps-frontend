@@ -3,6 +3,7 @@
 Dự án code bằng React + Vite + Tailwindcss, chạy nodejs 22.12
 ```
 # Cấu trúc thư mục
+```
 📦src
  ┣ 📂api
  ┣ 📂assets
@@ -21,6 +22,7 @@ Dự án code bằng React + Vite + Tailwindcss, chạy nodejs 22.12
  ┣ 📜App.jsx
  ┣ 📜index.css
  ┗ 📜main.jsx
+```
 
 ### Bắt đầu với dự án
 
