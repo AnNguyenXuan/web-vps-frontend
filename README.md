@@ -55,6 +55,7 @@ Bạn sẽ thấy danh sách các nhánh remote tương tự như sau:
 Sau đó, hãy chuyển sang nhánh của mình. Bạn có thể sử dụng lệnh sau để tạo một nhánh local mới kết nối với nhánh remote tương ứng và chuyển sang nhánh đó:
 
 ```
+git branch -M <tên nhánh>
 git checkout -b <tên_nhánh>
 ```
 
