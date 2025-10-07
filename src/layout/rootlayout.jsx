@@ -11,19 +11,20 @@ export default function RootLayout() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="w-full h-screen bg-gray-200 p-0 m-0">
       <Navbar />
-      <div className="flex-1">
-        <div className="mx-auto max-w-7xl flex">
-          {/* Sidebar trái */}
-          <Control />
-          {/* Khung nội dung trang */}
-          <main className="flex-1 p-4">
+      <div className="mx-auto w-full flex h-full pt-4">
+        {/* Sidebar trái */}
+        <Control />
+
+        {/* Cột phải: nội dung + footer (xếp dọc) */}
+        <div className="flex-1 flex flex-col px-4">
+          <main className="flex-1 min-w-0">
             <Outlet />
           </main>
+          <Footer />
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

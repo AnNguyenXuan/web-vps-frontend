@@ -1,10 +1,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import RootLayout from "./layout/rootlayout";
 import Home from "./pages/home";
-
-// Có thể thêm các trang khác sau này:
-// import Vps from "./pages/vps";
-// import Storage from "./pages/storage"; ...
+import ObjectStorage from "./pages/objectstorage";
+import Login from "./pages/login";
+import Register from "./pages/register";
+import GuestRoute from "./components/route/guestroute";
+import './App.css'
 
 const router = createBrowserRouter(
   [
@@ -12,12 +13,27 @@ const router = createBrowserRouter(
       element: <RootLayout />,
       children: [
         { index: true, element: <Home /> },
-        // { path: "vps", element: <Vps /> },
-        // { path: "storage", element: <Storage /> },
+        { path: "/object-storage", element: <ObjectStorage />},
+        {
+          path: "/login",
+          element: (
+            <GuestRoute>
+              <Login />
+            </GuestRoute>
+          ),
+        },
+        {
+          path: "/register",
+          element: (
+            <GuestRoute>
+              <Register />
+            </GuestRoute>
+          ),
+        },
       ],
     },
   ],
-  // Giúp app chạy đúng nếu sau này deploy dưới sub-path (VD: /panel/)
+
   { basename: import.meta.env.BASE_URL }
 );
 

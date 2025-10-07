@@ -1,1 +1,10 @@
+/* giữ reset */
+* {
+  box-sizing: border-box;
+}
 
+/* KHÔNG xoá margin/padding ở đây, để Tailwind class hoạt động bình thường */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}

@@ -37,29 +37,43 @@ npm run dev
 
 Lệnh update
 npm install -g npm@11.6.1
+npm install minio
 
 Lệnh cài icons
 npm install react-icons --save
 
 Lệnh cài 
-npm i react react-dom react-router-dom
+npm i react react-dom react-router-dom axios react-redux @reduxjs/toolkit
+
 ```
 # Cấu trúc thư mục
 ```
 📦src
  ┣ 📂api
+ ┃ ┣ 📜api.js
+ ┃ ┣ 📜securityApi.js
+ ┃ ┗ 📜userApi.js
  ┣ 📂assets
  ┃ ┗ 📜react.svg
  ┣ 📂components
  ┃ ┣ 📂home
+ ┃ ┣ 📂login
+ ┃ ┣ 📂register
  ┃ ┗ 📂shared
  ┃ ┃ ┣ 📜control.jsx
  ┃ ┃ ┣ 📜footer.jsx
  ┃ ┃ ┗ 📜navbar.jsx
+ ┣ 📂control
  ┣ 📂layout
  ┃ ┗ 📜rootlayout.jsx
  ┣ 📂pages
- ┃ ┗ 📜home.jsx
+ ┃ ┣ 📜home.jsx
+ ┃ ┣ 📜login.jsx
+ ┃ ┣ 📜objectstorage.jsx
+ ┃ ┗ 📜register.jsx
+ ┣ 📂redux
+ ┃ ┗ 📜userSlice.jsx
+ ┣ 📂utils
  ┣ 📜App.css
  ┣ 📜App.jsx
  ┣ 📜index.css
@@ -97,18 +111,14 @@ Bạn sẽ thấy danh sách các nhánh remote tương tự như sau:
 Sau đó, hãy chuyển sang nhánh của mình. Bạn có thể sử dụng lệnh sau để tạo một nhánh local mới kết nối với nhánh remote tương ứng và chuyển sang nhánh đó:
 
 ```
-git branch -M <tên nhánh>
+git branch -M <tên nhánh cá nhân>
 ```
 
 **Ví dụ:**
 
 ```
-git branch -M main
+git branch -M dev-an
 ```
-
-Lệnh này sẽ tạo nhánh local tên là **an**, kết nối với nhánh remote `remotes/origin/dev-an` trên GitHub, đồng thời chuyển nhánh đang hoạt động sang **vps-an** thay vì **main** như ban đầu.
-
------
 
 ### Viết báo cáo và đẩy lên GitHub
 
@@ -117,7 +127,7 @@ Lệnh này sẽ tạo nhánh local tên là **an**, kết nối với nhánh re
 ```
 git add .
 git commit -m "<ghi tóm tắt vài chữ về nội dung đẩy>"
-git push
+git push origin <tên_nhánh cá nhân>
 ```
 
 **Lưu ý:** Trước khi đẩy, hãy luôn kiểm tra lại xem bạn đang ở đúng nhánh. Điều này giúp tránh việc đẩy nhầm nội dung.

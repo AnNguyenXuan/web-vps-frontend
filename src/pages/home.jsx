@@ -5,10 +5,6 @@ export default function Home() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-xl border bg-white p-4">
-          <div className="text-sm text-gray-500">VPS đang chạy</div>
-          <div className="mt-2 text-3xl font-bold">0</div>
-        </div>
-        <div className="rounded-xl border bg-white p-4">
           <div className="text-sm text-gray-500">S3 Buckets</div>
           <div className="mt-2 text-3xl font-bold">0</div>
         </div>
@@ -21,9 +17,7 @@ export default function Home() {
       <div className="rounded-xl border bg-white p-4">
         <h2 className="font-medium mb-2">Quick Start</h2>
         <ol className="list-decimal pl-5 space-y-1 text-sm text-gray-700">
-          <li>Tạo instance VPS đầu tiên.</li>
           <li>Khởi tạo S3 Bucket cho khách hàng.</li>
-          <li>Gắn tên miền và thiết lập SSL.</li>
         </ol>
       </div>
     </section>
