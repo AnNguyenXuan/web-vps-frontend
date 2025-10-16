@@ -16,6 +16,8 @@ npm create vite@latest frontend -- --template react-ts
 cd frontend
 npm install
 npm i -D tailwindcss @tailwindcss/vite
+npm i redux-persist
+
 
 Sửa config vite.config.js
 import { defineConfig } from 'vite'
