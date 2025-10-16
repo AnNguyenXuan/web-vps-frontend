@@ -1,4 +1,3 @@
-// src/redux/slices/userSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import userApi from "../../api/userApi";
 

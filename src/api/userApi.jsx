@@ -1,4 +1,4 @@
-import api, { handleError } from "./api";
+import api, { handleError } from "./Api";
 
 const userApi = {
   /**
@@ -53,7 +53,7 @@ const userApi = {
    */
   createUser: async (data) => {
     try {
-      const response = await api.post("/users", data);
+      const response = await api.post("/users/", data);
       return response.data; 
     } catch (error) {
       handleError(error);

@@ -1,6 +1,6 @@
 export const saveTokens = (accessToken, refreshToken) => {
   sessionStorage.setItem("accessToken", accessToken);
-  sessionStorage.setItem("refreshToken", refreshToken);
+  if (refreshToken) sessionStorage.setItem("refreshToken", refreshToken || "");
 };
 
 export const clearTokens = () => {

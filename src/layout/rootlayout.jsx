@@ -1,6 +1,6 @@
-import Navbar from "../components/shared/navbar";
-import Control from "../components/shared/control";
-import Footer from "../components/shared/footer";
+import Navbar from "@/components/shared/Navbar";
+import Control from "@/components/shared/Control";
+import Footer from "@/components/shared/Footer";
 import { Outlet, useInRouterContext } from "react-router-dom";
 
 export default function RootLayout() {

@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
+// src/hooks/useS3.js
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import s3Api from "../api/s3Api";
-import S3Status from "../components/objectstorage/s3status";
-import S3Actions from "../components/objectstorage/s3actions/S3Actions";
-import S3Bucket from "../components/objectstorage/s3buckets/S3Bucket";
 
-export default function ObjectStorage() {
+export default function useS3() {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
+  const [toast, setToast] = useState(null);
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [hasAccount, setHasAccount] = useState(false);
 
@@ -17,18 +15,14 @@ export default function ObjectStorage() {
 
   const [creating, setCreating] = useState(false);
   const [importing, setImporting] = useState(false);
-
-  const [toast, setToast] = useState(null);
   const [lastCreateResp, setLastCreateResp] = useState(null);
 
-  // auto hide toast
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), 4000);
     return () => clearTimeout(t);
   }, [toast]);
 
-  // reset & load status when auth changes
   useEffect(() => {
     setHasAccount(false);
     setBuckets([]);
@@ -53,7 +47,6 @@ export default function ObjectStorage() {
     }
   }, [isAuthenticated]);
 
-  // load buckets when hasAccount
   useEffect(() => {
     if (!isAuthenticated || !hasAccount) return;
     (async () => {
@@ -112,70 +105,11 @@ export default function ObjectStorage() {
     }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-10">
-        <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-300">
-          <h1 className="mb-2 text-2xl font-semibold tracking-tight">Object Storage (S3)</h1>
-          <p className="mx-auto mb-6 max-w-md text-sm">
-            Vui lòng đăng nhập để sử dụng dịch vụ Object Storage, tạo tài khoản S3 và quản lý buckets.
-          </p>
-          <Link
-            to="/login"
-            className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow hover:bg-indigo-700"
-          >
-            Đăng nhập
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mx-auto max-w-5xl px-4 py-6">
-      {/* Toast */}
-      {toast && (
-        <div
-          className={`mb-4 rounded-lg border px-4 py-3 text-sm ${
-            toast.type === "success"
-              ? "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-300"
-              : toast.type === "error"
-              ? "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300"
-              : "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
-
-      {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Object Storage (S3)</h1>
-        {hasAccount && (
-          <button
-            onClick={refreshBuckets}
-            disabled={loadingBuckets}
-            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
-          >
-            {loadingBuckets ? "Đang làm mới…" : "Làm mới"}
-          </button>
-        )}
-      </div>
-
-      {/* Grid: Status + Actions */}
-      <div className="mb-8 grid gap-4 md:grid-cols-2">
-        <S3Status loading={loadingStatus} hasAccount={hasAccount} />
-
-        <S3Actions
-          creating={creating}
-          importing={importing}
-          onCreateAccount={onCreateAccount}
-          onImportFile={onImportFile}
-          showSecurityNote={!!lastCreateResp}
-        />
-      </div>
-
-      <S3Bucket hasAccount={hasAccount} loading={loadingBuckets} buckets={buckets} />
-    </div>
-  );
+  return {
+    isAuthenticated,
+    toast, setToast,
+    loadingStatus, hasAccount,
+    buckets, loadingBuckets, refreshBuckets,
+    creating, importing, lastCreateResp, onCreateAccount, onImportFile,
+  };
 }

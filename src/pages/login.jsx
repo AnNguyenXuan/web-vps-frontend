@@ -25,7 +25,6 @@ export default function Login() {
   };
 
 
-
   return (
     <div className="items-center justify-center bg-gray-50 h-full flex">
       <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">

@@ -1,4 +1,4 @@
-import api, { handleError } from "./api";
+import api, { handleError } from "./Api";
 
 const securityApi = {
   /**

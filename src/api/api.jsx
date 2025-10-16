@@ -1,171 +1,119 @@
-import axios from 'axios';
+import axios from "axios";
 
-// Định nghĩa baseURL duy nhất
-const BASE_URL = 'http://s3.click:8000';
+const BASE_URL = "http://s3.click:8000";
 
-// Tạo instance của Axios với baseURL
 const api = axios.create({
   baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { "Content-Type": "application/json" },
 });
 
-let isRefreshing = false;  // Trạng thái làm mới token
-let failedQueue = [];  // Hàng đợi các yêu cầu bị chặn do token hết hạn
+let isRefreshing = false;
+let failedQueue = [];
 
 const processQueue = (error, token = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token);
-    }
-  });
+  failedQueue.forEach((p) => (error ? p.reject(error) : p.resolve(token)));
   failedQueue = [];
 };
 
-// Interceptor cho request
-api.interceptors.request.use((config) => {
-  // Kiểm tra tùy chọn `skipAuth` trong config
-  if (config.skipAuth) {
-    return config;  // Bỏ qua việc thêm token nếu skipAuth = true
-  }
+// ✅ GẮN BEARER TOKEN CHO MỌI REQUEST (trừ khi skipAuth)
+api.interceptors.request.use(
+  (config) => {
+    if (config.skipAuth) return config;
+    const at = sessionStorage.getItem("accessToken");
+    if (at) config.headers.Authorization = `Bearer ${at}`;
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-  const token = sessionStorage.getItem('accessToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-}, (error) => Promise.reject(error));
+// ✅ AUTO-REFRESH KHI 401, SAU ĐÓ RETRY 1 LẦN
+api.interceptors.response.use(
+  (res) => res,
+  async (error) => {
+    const original = error.config;
 
-// Interceptor cho response
-api.interceptors.response.use((response) => response, async (error) => {
-  const originalRequest = error.config;
-
-  // Kiểm tra nếu lỗi là do hết hạn accessToken (401 Unauthorized)
-  if (error.response?.status === 401 && !originalRequest._retry) {
-    originalRequest._retry = true;
-
-    // Lấy refreshToken từ localStorage
-    const refreshToken = sessionStorage.getItem('refreshToken');
-
-    if (!refreshToken) {
-      console.error('Refresh token không tồn tại. Cần đăng nhập lại.');
-      // Gọi logic hiển thị thông báo tại đây nếu cần
-      return Promise.reject(error);
-    }
-
-    if (!isRefreshing) {
-      isRefreshing = true;
-
-      try {
-        const response = await axios.post(`${BASE_URL}/refresh-token`, {
-          refreshToken,
-        });
-
-        const newAccessToken = response.data.accessToken;
-
-        // Cập nhật accessToken mới vào localStorage
-        sessionStorage.setItem('accessToken', newAccessToken);
-
-        // Tiếp tục các yêu cầu bị chặn
-        processQueue(null, newAccessToken);
-
-        isRefreshing = false;
-
-        // Gửi lại yêu cầu ban đầu với accessToken mới
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return api(originalRequest);
-      } catch (refreshError) {
-        isRefreshing = false;
-        processQueue(refreshError, null);
-
-        // Xử lý nếu refreshToken cũng hết hạn
-        if (refreshError.response?.status === 401) {
-          console.error('Refresh token cũng đã hết hạn. Cần đăng nhập lại.');
-          // Gọi logic hiển thị thông báo tại đây nếu cần
-        }
-        return Promise.reject(refreshError);
+    if (error.response?.status === 401 && !original._retry) {
+      original._retry = true;
+      const rt = sessionStorage.getItem("refreshToken");
+      if (!rt) {
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("refreshToken");
+        return Promise.reject(error);
       }
+
+      if (!isRefreshing) {
+        isRefreshing = true;
+        try {
+          // 🔁 ĐÚNG endpoint backend của bạn: /auth/refresh-token
+          const { data } = await api.post(
+            "/auth/refresh-token",
+            { refreshToken: rt },
+            { skipAuth: true }
+          );
+          const newAT = data?.accessToken;
+          if (!newAT) throw new Error("No accessToken returned");
+
+          sessionStorage.setItem("accessToken", newAT);
+          // backend không trả refreshToken mới → giữ nguyên RT
+          processQueue(null, newAT);
+          isRefreshing = false;
+
+          original.headers.Authorization = `Bearer ${newAT}`;
+          return api(original);
+        } catch (e) {
+          isRefreshing = false;
+          processQueue(e, null);
+          sessionStorage.removeItem("accessToken");
+          sessionStorage.removeItem("refreshToken");
+          return Promise.reject(e);
+        }
+      }
+
+      // đang refresh → xếp hàng đợi
+      return new Promise((resolve, reject) => {
+        failedQueue.push({
+          resolve: (token) => {
+            original.headers.Authorization = `Bearer ${token}`;
+            resolve(api(original));
+          },
+          reject,
+        });
+      });
     }
 
-    // Đợi refresh token đang xử lý và thêm yêu cầu vào hàng đợi
-    return new Promise((resolve, reject) => {
-      failedQueue.push({
-        resolve: (token) => {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          resolve(api(originalRequest));
-        },
-        reject: (err) => reject(err),
-      });
-    });
+    return Promise.reject(error);
   }
+);
 
-  // Nếu không phải lỗi 401, trả về lỗi như bình thường
-  return Promise.reject(error);
-});
-
-/**
- * Xử lý lỗi khi gọi API
- * @param {Object} error - Đối tượng lỗi từ Axios
- */
 export const handleError = (error) => {
-  // Lấy URL đầy đủ từ baseURL và url (nếu có)
   const fullURL = error.config?.baseURL
-    ? `${error.config.baseURL}${error.config.url || ''}`
-    : error.config?.url || 'Unknown URL';
+    ? `${error.config.baseURL}${error.config.url || ""}`
+    : error.config?.url || "Unknown URL";
 
   if (error.response) {
-    // Lấy thông tin từ response
-    const { success, error_code, message } = error.response.data;
-    const httpMethod = error.config?.method?.toUpperCase() || 'UNKNOWN';
+    const data = error.response.data;
+    const httpMethod = error.config?.method?.toUpperCase() || "UNKNOWN";
     const statusCode = error.response.status;
 
-    // Tạo đối tượng lỗi với các thông tin bổ sung
-    const errorObject = {
-      success,
-      error_code,
-      message,
-      url: fullURL,
-      method: httpMethod,
-      status: statusCode,
-    };
+    // ▶️ parse 422 của FastAPI (nếu cần)
+    if (statusCode === 422 && Array.isArray(data?.detail)) {
+      const msg = data.detail
+        .map((d) => {
+          const path = Array.isArray(d.loc) ? d.loc.slice(1).join(".") : "";
+          return path ? `${path}: ${d.msg}` : d.msg;
+        })
+        .join("; ");
+      throw { success: false, message: msg, url: fullURL, method: httpMethod, status: statusCode };
+    }
 
-    // In lỗi ra console
-    console.error(`API Error:
-    URL: ${fullURL}
-    Method: ${httpMethod}
-    HTTP Status: ${statusCode}
-    Code: ${error_code}
-    Message: ${message}`);
-
-    // Trả về đối tượng lỗi
-    throw errorObject;
+    const { success, error_code, message } = data || {};
+    throw { success, error_code, message, url: fullURL, method: httpMethod, status: statusCode };
   } else if (error.request) {
-    // Xử lý lỗi không nhận được phản hồi từ server
-    const httpMethod = error.config?.method?.toUpperCase() || 'UNKNOWN';
-    const errorObject = {
-      success: false,
-      message: 'Không có phản hồi từ máy chủ.',
-      url: fullURL,
-      method: httpMethod,
-      status: null, // Vì không có phản hồi, không có mã trạng thái HTTP
-    };
-
-    // In lỗi ra console
-    console.error(`API Error:
-    URL: ${fullURL}
-    Method: ${httpMethod}
-    Message: Không có phản hồi từ máy chủ.`);
-
-    // Trả về đối tượng lỗi
-    throw errorObject;
+    const httpMethod = error.config?.method?.toUpperCase() || "UNKNOWN";
+    throw { success: false, message: "Không có phản hồi từ máy chủ.", url: fullURL, method: httpMethod, status: null };
   } else {
-    throw error; // Đẩy lỗi lên tầng trên mà không bắt lại trong hàm này
+    throw error;
   }
 };
-
-
 
 export default api;
